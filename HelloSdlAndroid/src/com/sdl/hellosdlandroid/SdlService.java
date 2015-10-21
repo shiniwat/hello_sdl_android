@@ -78,6 +78,8 @@ import com.smartdevicelink.proxy.rpc.enums.HMILevel;
 import com.smartdevicelink.proxy.rpc.enums.LockScreenStatus;
 import com.smartdevicelink.proxy.rpc.enums.SdlDisconnectedReason;
 import com.smartdevicelink.proxy.rpc.enums.TextAlignment;
+import com.smartdevicelink.transport.BaseTransportConfig;
+import com.smartdevicelink.transport.TCPTransportConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -103,6 +105,10 @@ public class SdlService extends Service implements IProxyListenerALM{
 	
 	private static final String TEST_COMMAND_NAME 		= "Test Command";
 	private static final int TEST_COMMAND_ID 			= 1;
+
+    // TCP/IP transport config
+    private static final int TCP_PORT = 12345;
+    private static final String DEV_MACHINE_IP_ADDRESS = "192.168.36.149";
 
     // Conenction management
 	private static final int CONNECTION_TIMEOUT = 180 * 1000;
@@ -167,7 +173,9 @@ public class SdlService extends Service implements IProxyListenerALM{
 		if (proxy == null) {
 			try {
                 Log.i(TAG, "Starting SDL Proxy");
-				proxy = new SdlProxyALM(this, APP_NAME, true, APP_ID);
+				// proxy = new SdlProxyALM(this, APP_NAME, true, APP_ID);
+                BaseTransportConfig transportConfig = new TCPTransportConfig(TCP_PORT, DEV_MACHINE_IP_ADDRESS, true);
+                proxy = new SdlProxyALM(this, APP_NAME, true, APP_ID, transportConfig);
 			} catch (SdlException e) {
 				e.printStackTrace();
 				// error creating proxy, returned proxy = null
