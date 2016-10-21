@@ -9,6 +9,8 @@ import java.util.List;
 
 import android.app.Service;
 import android.content.Intent;
+import android.hardware.usb.UsbManager;
+import android.hardware.usb.UsbAccessory;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -82,8 +84,10 @@ import com.smartdevicelink.proxy.rpc.enums.HMILevel;
 import com.smartdevicelink.proxy.rpc.enums.LockScreenStatus;
 import com.smartdevicelink.proxy.rpc.enums.SdlDisconnectedReason;
 import com.smartdevicelink.proxy.rpc.enums.TextAlignment;
+import com.smartdevicelink.transport.BaseTransportConfig;
 import com.smartdevicelink.transport.MultiplexTransportConfig;
 import com.smartdevicelink.transport.TransportConstants;
+import com.smartdevicelink.transport.USBTransportConfig;
 import com.smartdevicelink.util.CorrelationIdGenerator;
 
 public class SdlService extends Service implements IProxyListenerALM{
@@ -127,8 +131,7 @@ public class SdlService extends Service implements IProxyListenerALM{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		//Check if this was started with a flag to force a transport connect
-		boolean forced = intent !=null && intent.getBooleanExtra(TransportConstants.FORCE_TRANSPORT_CONNECTED, false);
-        startProxy(forced);
+        startProxy(intent);
 
 		return START_STICKY;
 	}
@@ -143,23 +146,37 @@ public class SdlService extends Service implements IProxyListenerALM{
 		return proxy;
 	}
 
-	public void startProxy(boolean forceConnect) {
-        Log.i(TAG, "Trying to start proxy");
-		if (proxy == null) {
-			try {
-                Log.i(TAG, "Starting SDL Proxy");
-				proxy = new SdlProxyALM(this, APP_NAME, true, APP_ID,new MultiplexTransportConfig(getBaseContext(), APP_ID));
-			} catch (SdlException e) {
-				e.printStackTrace();
-				// error creating proxy, returned proxy = null
-				if (proxy == null) {
-					stopSelf();
-				}
-			}
-		}else if(forceConnect){
-			proxy.forceOnConnected();
-		}
-	}
+    public void startProxy(Intent intent) {
+        if (proxy == null) {
+            try {
+                BaseTransportConfig transport = null;
+                if(intent!=null && intent.hasExtra(UsbManager.EXTRA_ACCESSORY)){ //If we want to support USB transport
+                    if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.HONEYCOMB){
+                        Log.e(TAG, "Unable to start proxy. Android OS version is too low");
+                        return;
+                    }
+                    //We have a usb transport
+                    transport = new USBTransportConfig(getBaseContext(),(UsbAccessory)intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY));
+                }else{
+                    //If we don't want anything but USB then would just do a return here and bail
+                   // transport = new MultiplexTransportConfig(getBaseContext(), APP_ID);
+                    Log.e(TAG, "Not usb intent. Shutting down");
+                    stopSelf();
+                    return;
+                }
+                proxy = new SdlProxyALM(this, APP_NAME,
+                        true, APP_ID,
+                        transport);
+
+            } catch (SdlException e) {
+                e.printStackTrace();
+                // error creating proxy, returned proxy = null
+                if (proxy == null) {
+                    stopSelf();
+                }
+            }
+        }
+    }
 
 	public void disposeSyncProxy() {
 		LockScreenActivity.updateLockScreenStatus(LockScreenStatus.OFF);
