@@ -46,6 +46,10 @@ android {
             buildConfigField 'String', 'TRANSPORT', '"USB"'
             buildConfigField 'String', 'SECURITY', '"OFF"'
         }
+        aoa {
+            buildConfigField 'String', 'TRANSPORT', '"AOA"'
+            buildConfigField 'String', 'SECURITY', '"OFF"'
+        }
     }
 }
 

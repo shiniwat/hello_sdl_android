@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.smartdevicelink.transport.enums.TransportType;
+
 public class MainActivity extends AppCompatActivity {
 	private static final String TAG = "MainActivity";
 	
@@ -15,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		//If we are connected to a module we want to start our SdlService
 		if(BuildConfig.TRANSPORT.equals("MBT")) {
-			SdlReceiver.queryForConnectedService(this);
+			SdlReceiver.queryForConnectedService(this, TransportType.MULTIPLEX);
 		}else if(BuildConfig.TRANSPORT.equals("TCP") || BuildConfig.TRANSPORT.equals("LBT")) {
 			Intent proxyIntent = new Intent(this, SdlService.class);
 			startService(proxyIntent);

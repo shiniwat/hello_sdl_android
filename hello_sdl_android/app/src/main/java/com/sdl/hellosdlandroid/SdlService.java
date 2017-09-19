@@ -63,6 +63,7 @@ import com.smartdevicelink.proxy.rpc.PutFileResponse;
 import com.smartdevicelink.proxy.rpc.ReadDIDResponse;
 import com.smartdevicelink.proxy.rpc.ResetGlobalPropertiesResponse;
 import com.smartdevicelink.proxy.rpc.ScrollableMessageResponse;
+import com.smartdevicelink.proxy.rpc.SendHapticDataResponse;
 import com.smartdevicelink.proxy.rpc.SendLocationResponse;
 import com.smartdevicelink.proxy.rpc.SetAppIconResponse;
 import com.smartdevicelink.proxy.rpc.SetDisplayLayoutResponse;
@@ -89,12 +90,14 @@ import com.smartdevicelink.proxy.rpc.enums.RequestType;
 import com.smartdevicelink.proxy.rpc.enums.SdlDisconnectedReason;
 import com.smartdevicelink.proxy.rpc.enums.TextAlignment;
 import com.smartdevicelink.proxy.rpc.listeners.OnRPCResponseListener;
+import com.smartdevicelink.proxy.rpc.GetSystemCapabilityResponse;
 import com.smartdevicelink.transport.BTTransportConfig;
 import com.smartdevicelink.transport.BaseTransportConfig;
 import com.smartdevicelink.transport.MultiplexTransportConfig;
 import com.smartdevicelink.transport.TCPTransportConfig;
 import com.smartdevicelink.transport.TransportConstants;
 import com.smartdevicelink.transport.USBTransportConfig;
+import com.smartdevicelink.transport.enums.TransportType;
 import com.smartdevicelink.util.CorrelationIdGenerator;
 
 import java.io.ByteArrayOutputStream;
@@ -199,6 +202,10 @@ public class SdlService extends Service implements IProxyListenerALM{
 						transport = new USBTransportConfig(getBaseContext(), (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY));
 						Log.d(TAG, "USB created.");
 					}
+				} else if (BuildConfig.TRANSPORT.equals("AOA") && intent.getAction() != null && intent.getAction().equalsIgnoreCase(TransportConstants.AOA_ROUTER_OPEN_ACCESSORY)) {
+					Log.d(TAG, "about starting AOA Multiplexing");
+					transport = new MultiplexTransportConfig(getBaseContext(), APP_ID);
+					((MultiplexTransportConfig)transport).setTransportType(TransportType.MULTIPLEX_AOA);
 				}
 				if(transport != null) {
 					proxy = new SdlProxyALM(this, APP_NAME, true, APP_ID, transport);
@@ -211,7 +218,7 @@ public class SdlService extends Service implements IProxyListenerALM{
 				}
 			}
 		}else if(forceConnect){
-			proxy.forceOnConnected();
+			proxy.forceOnConnected(true);
 		}
 	}
 
@@ -845,6 +852,16 @@ public class SdlService extends Service implements IProxyListenerALM{
 	@Override
 	public void onGenericResponse(GenericResponse response) {
         Log.i(TAG, "Generic response from SDL: " + response.getResultCode().name() + " Info: " + response.getInfo());
+	}
+
+	@Override
+	public void onGetSystemCapabilityResponse(GetSystemCapabilityResponse response) {
+
+	}
+
+	@Override
+	public void onSendHapticDataResponse(SendHapticDataResponse response) {
+
 	}
 
 }
