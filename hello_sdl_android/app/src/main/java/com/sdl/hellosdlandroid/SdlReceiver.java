@@ -47,6 +47,11 @@ public class SdlReceiver  extends SdlBroadcastReceiver {
 				} else if (action.equalsIgnoreCase(USBTransport.ACTION_USB_ACCESSORY_ATTACHED)) {
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						SdlReceiver.queryForConnectedService(context, TransportType.MULTIPLEX_AOA);
+					} else {
+						// @TODO: need to figure out the better way when we don't have USB permission granted.
+						// Anyway, we still need service to access the UsbAccessory.
+						Log.d(TAG, "We have not USB permission granted; but launch service anyway");
+						SdlReceiver.queryForConnectedService(context, TransportType.MULTIPLEX_AOA);
 					}
 				} else if (action.equalsIgnoreCase(TransportConstants.AOA_ROUTER_OPEN_ACCESSORY)) {
 					Intent proxyIntent = new Intent(context, SdlService.class);
