@@ -4,5 +4,6 @@
     <string name="app_name">Hello Sdl Android</string>
     <string name="hello_world">Hello SDL!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_forceaoa">Change Transport to AOA</string>
 
 </resources>

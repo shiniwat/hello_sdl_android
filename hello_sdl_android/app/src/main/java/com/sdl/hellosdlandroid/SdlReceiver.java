@@ -40,6 +40,7 @@ public class SdlReceiver  extends SdlBroadcastReceiver {
 		if (intent != null) {
 			String action = intent.getAction();
 			if (action != null){
+				Log.d(TAG, "Got broadcast action: " + action);
 				if(action.equalsIgnoreCase(TransportConstants.START_ROUTER_SERVICE_ACTION)) {
 					if (intent.getBooleanExtra(RECONNECT_LANG_CHANGE, false)) {
 						onSdlEnabled(context, intent);
@@ -54,9 +55,8 @@ public class SdlReceiver  extends SdlBroadcastReceiver {
 						SdlReceiver.queryForConnectedService(context, TransportType.MULTIPLEX_AOA);
 					}
 				} else if (action.equalsIgnoreCase(TransportConstants.AOA_ROUTER_OPEN_ACCESSORY)) {
-					Intent proxyIntent = new Intent(context, SdlService.class);
-					proxyIntent.setAction(TransportConstants.AOA_ROUTER_OPEN_ACCESSORY);
-					context.startService(proxyIntent);
+					SdlApplication.forceAoa = true;
+					SdlApplication.restartSDL();
 				}
 			}
 		}

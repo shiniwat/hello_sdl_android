@@ -12,6 +12,7 @@ public class SdlApplication extends Application{
     private static final String TAG = SdlApplication.class.getSimpleName();
 
     private static SdlApplication instance;
+    public static boolean forceAoa = false;
 
     @Override
     public void onCreate() {

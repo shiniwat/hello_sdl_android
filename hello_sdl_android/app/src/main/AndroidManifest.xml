@@ -35,7 +35,7 @@
         <activity
             android:name=".LockScreenActivity"/>
 
-        <activity android:name="com.smartdevicelink.transport.USBAccessoryAttachmentActivity"
+        <!--activity android:name="com.smartdevicelink.transport.USBAccessoryAttachmentActivity"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
@@ -44,7 +44,7 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
                 android:resource="@xml/accessory_filter" />
-        </activity>
+        </activity-->
 
         <service android:name="com.sdl.hellosdlandroid.SdlService" >
         </service>
@@ -57,16 +57,16 @@
             android:name="com.sdl.hellosdlandroid.SdlAoaRouterService"
             android:exported="true"
             android:process="com.smartdevicelink.aoarouter" />
-        <receiver android:name="com.sdl.hellosdlandroid.SdlReceiver" >
+        <!--receiver android:name="com.sdl.hellosdlandroid.SdlReceiver" >
             <intent-filter>
-                <action android:name="com.smartdevicelink.USB_ACCESSORY_ATTACHED"/> <!--For AOA -->
+                <action android:name="com.smartdevicelink.USB_ACCESSORY_ATTACHED"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
                 <action android:name="sdl.router.startservice" />
                 <action android:name="sdl.router.openaccessory" />
             </intent-filter>
-        </receiver>
+        </receiver-->
     </application>
 
 </manifest>

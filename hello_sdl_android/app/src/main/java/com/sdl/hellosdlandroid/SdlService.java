@@ -132,7 +132,7 @@ public class SdlService extends Service implements IProxyListenerALM{
 
 	// TCP/IP transport config
 	private static final int TCP_PORT = 12345;
-	private static final String DEV_MACHINE_IP_ADDRESS = "192.168.1.78";
+	private static final String DEV_MACHINE_IP_ADDRESS = "10.10.121.38";//"192.168.1.78";
 
 	// variable to create and call functions of the SyncProxy
 	private SdlProxyALM proxy = null;
@@ -180,7 +180,11 @@ public class SdlService extends Service implements IProxyListenerALM{
 			try {
                 Log.i(TAG, "Starting SDL Proxy");
 				BaseTransportConfig transport = null;
-				if(BuildConfig.TRANSPORT.equals("MBT")){
+				if (SdlApplication.forceAoa) {
+					Log.d(TAG, "about starting AOA Multiplexing");
+					transport = new MultiplexTransportConfig(getBaseContext(), APP_ID);
+					((MultiplexTransportConfig)transport).setTransportType(TransportType.MULTIPLEX_AOA);
+				} else if(BuildConfig.TRANSPORT.equals("MBT")){
 					int securityLevel;
 					if(BuildConfig.SECURITY.equals("HIGH")){
 						securityLevel = MultiplexTransportConfig.FLAG_MULTI_SECURITY_HIGH;
@@ -214,6 +218,8 @@ public class SdlService extends Service implements IProxyListenerALM{
 				if(transport != null) {
 					proxy = new SdlProxyALM(this, APP_NAME, true, APP_ID, transport);
 				}
+				// every time reset forceAoa flag after started the proxy.
+				SdlApplication.forceAoa = false;
 			} catch (SdlException e) {
 				e.printStackTrace();
 				// error creating proxy, returned proxy = null
